@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      khatib_schedules: {
+        Row: {
+          created_at: string
+          id: string
+          nama_lengkap: string
+          nip: string
+          no_hp: string
+          saran: string | null
+          schedule_date: string
+          tempat_tugas: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nama_lengkap: string
+          nip: string
+          no_hp: string
+          saran?: string | null
+          schedule_date: string
+          tempat_tugas: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nama_lengkap?: string
+          nip?: string
+          no_hp?: string
+          saran?: string | null
+          schedule_date?: string
+          tempat_tugas?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

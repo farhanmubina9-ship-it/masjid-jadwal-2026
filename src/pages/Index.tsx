@@ -1,13 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import HeroSection from '@/components/HeroSection';
 import ScheduleList from '@/components/ScheduleList';
 import KhatibFormDialog from '@/components/KhatibFormDialog';
 import Footer from '@/components/Footer';
-import { generateFridays2026, KhatibSchedule, KhatibData } from '@/lib/schedule-data';
+import { KhatibSchedule, KhatibData } from '@/lib/schedule-data';
+import { useKhatibSchedules } from '@/hooks/useKhatibSchedules';
 
 const Index = () => {
-  const [schedules, setSchedules] = useState<KhatibSchedule[]>(() => generateFridays2026());
+  const { schedules, isLoading, registerKhatib } = useKhatibSchedules();
   const [selectedSchedule, setSelectedSchedule] = useState<KhatibSchedule | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -17,14 +18,8 @@ const Index = () => {
     setDialogOpen(true);
   };
 
-  const handleSubmitKhatib = (schedule: KhatibSchedule, data: KhatibData) => {
-    setSchedules(prev => 
-      prev.map(s => 
-        s.dateString === schedule.dateString 
-          ? { ...s, khatib: data }
-          : s
-      )
-    );
+  const handleSubmitKhatib = async (schedule: KhatibSchedule, data: KhatibData) => {
+    await registerKhatib({ schedule, data });
   };
 
   return (

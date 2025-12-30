@@ -44,7 +44,7 @@ interface KhatibFormDialogProps {
   schedule: KhatibSchedule | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (schedule: KhatibSchedule, data: KhatibData) => void;
+  onSubmit: (schedule: KhatibSchedule, data: KhatibData) => Promise<void>;
 }
 
 const KhatibFormDialog = ({ schedule, open, onOpenChange, onSubmit }: KhatibFormDialogProps) => {
@@ -66,24 +66,28 @@ const KhatibFormDialog = ({ schedule, open, onOpenChange, onSubmit }: KhatibForm
     
     setIsSubmitting(true);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    onSubmit(schedule, {
-      namaLengkap: data.namaLengkap,
-      nip: data.nip,
-      noHP: data.noHP,
-      tempatTugas: data.tempatTugas,
-      saran: data.saran,
-    });
-    
-    toast.success('Jadwal berhasil disimpan!', {
-      description: `${data.namaLengkap} terdaftar sebagai Khatib pada ${schedule.formattedDate}`,
-    });
-    
-    form.reset();
-    setIsSubmitting(false);
-    onOpenChange(false);
+    try {
+      await onSubmit(schedule, {
+        namaLengkap: data.namaLengkap,
+        nip: data.nip,
+        noHP: data.noHP,
+        tempatTugas: data.tempatTugas,
+        saran: data.saran,
+      });
+      
+      toast.success('Jadwal berhasil disimpan!', {
+        description: `${data.namaLengkap} terdaftar sebagai Khatib pada ${schedule.formattedDate}`,
+      });
+      
+      form.reset();
+      onOpenChange(false);
+    } catch (error) {
+      toast.error('Gagal menyimpan jadwal', {
+        description: 'Terjadi kesalahan, silakan coba lagi.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
