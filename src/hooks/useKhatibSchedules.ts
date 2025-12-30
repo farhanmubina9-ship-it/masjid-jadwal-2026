@@ -66,7 +66,7 @@ export function useKhatibSchedules() {
           tempat_tugas: data.tempatTugas,
           saran: data.saran || null,
         });
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -74,11 +74,38 @@ export function useKhatibSchedules() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (scheduleDate: string) => {
+      const { error } = await supabase
+        .from('khatib_schedules')
+        .delete()
+        .eq('schedule_date', scheduleDate);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['khatib-schedules'] });
+    },
+  });
+
+  const getAllSchedules = async () => {
+    const { data, error } = await supabase
+      .from('khatib_schedules')
+      .select('*')
+      .order('schedule_date', { ascending: true });
+
+    if (error) throw error;
+    return data as DbKhatibSchedule[];
+  };
+
   return {
     schedules,
     isLoading,
     error,
     registerKhatib: registerMutation.mutateAsync,
     isRegistering: registerMutation.isPending,
+    deleteKhatib: deleteMutation.mutateAsync,
+    isDeleting: deleteMutation.isPending,
+    getAllSchedules,
   };
 }
